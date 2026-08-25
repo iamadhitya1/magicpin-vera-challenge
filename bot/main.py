@@ -24,9 +24,9 @@ app = FastAPI(title="magicpin AI Challenge -- Vera bot")
 START_TIME = time.time()
 TICK_ACTION_CAP = 20
 
-TEAM_NAME = "M Adhitya"
-TEAM_MEMBERS = ["M Adhitya"]
-CONTACT_EMAIL = "muthuadithya999@gmail.com"
+TEAM_NAME = "M. Adhitya"
+TEAM_MEMBERS = ["M. Adhitya"]
+CONTACT_EMAIL = "adhitya5119@gmail.com"
 BOT_VERSION = "1.0.0"
 APPROACH = (
     "Stateful FastAPI service. compose() dispatches by trigger.kind to ~26 hand-tuned "
