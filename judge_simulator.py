@@ -151,6 +151,13 @@ class ScoreResult:
 # LLM PROVIDERS
 # =============================================================================
 
+# Python's urllib sends "Python-urllib/x.y" as its default User-Agent, which
+# several providers' CDN/bot-protection (Groq included) reject outright with
+# a bare 403 -- no error body, no explanation. A normal-looking User-Agent
+# fixes it; this has nothing to do with the API key itself.
+_USER_AGENT = "Mozilla/5.0 (compatible; magicpin-vera-challenge-judge-simulator/1.0)"
+
+
 class LLMProvider(ABC):
     @abstractmethod
     def complete(self, prompt: str, system: str = None) -> str:
@@ -185,7 +192,7 @@ class OpenAIProvider(LLMProvider):
         req = urlrequest.Request(
             "https://api.openai.com/v1/chat/completions",
             data=body,
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
@@ -210,7 +217,7 @@ class AnthropicProvider(LLMProvider):
             "https://api.anthropic.com/v1/messages",
             data=json.dumps(body_dict).encode("utf-8"),
             headers={"x-api-key": self.api_key, "Content-Type": "application/json",
-                     "anthropic-version": "2023-06-01"}
+                     "anthropic-version": "2023-06-01", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
@@ -233,7 +240,7 @@ class GeminiProvider(LLMProvider):
         }).encode("utf-8")
 
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
-        req = urlrequest.Request(url, data=body, headers={"Content-Type": "application/json"})
+        req = urlrequest.Request(url, data=body, headers={"Content-Type": "application/json", "User-Agent": _USER_AGENT})
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
         return data["candidates"][0]["content"]["parts"][0]["text"]
@@ -257,7 +264,7 @@ class DeepSeekProvider(LLMProvider):
             "https://api.deepseek.com/v1/chat/completions",
             data=json.dumps({"model": self.model, "messages": messages,
                             "temperature": 0.2, "max_tokens": 1500}).encode("utf-8"),
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
@@ -285,7 +292,7 @@ class GroqProvider(LLMProvider):
             "https://api.groq.com/openai/v1/chat/completions",
             data=json.dumps({"model": self.model, "messages": messages,
                             "temperature": 0.2, "max_tokens": 1500}).encode("utf-8"),
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
@@ -306,7 +313,7 @@ class OllamaProvider(LLMProvider):
             f"{self.api_url}/api/generate",
             data=json.dumps({"model": self.model, "prompt": full_prompt,
                             "stream": False, "options": {"temperature": 0.2}}).encode("utf-8"),
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=90)
         data = json.loads(resp.read().decode("utf-8"))
@@ -332,7 +339,7 @@ class OpenRouterProvider(LLMProvider):
             data=json.dumps({"model": self.model, "messages": messages,
                             "temperature": 0.2, "max_tokens": 1500}).encode("utf-8"),
             headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json",
-                     "HTTP-Referer": "https://magicpin.com"}
+                     "HTTP-Referer": "https://magicpin.com", "User-Agent": _USER_AGENT}
         )
         resp = urlrequest.urlopen(req, timeout=TIMEOUT_LLM)
         data = json.loads(resp.read().decode("utf-8"))
