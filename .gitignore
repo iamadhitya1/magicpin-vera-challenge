@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.log
+smoke_out.txt
+all30_full.txt
+full_bodies.txt
+.env
+expanded/
+magicpin-ai-challenge.zip
