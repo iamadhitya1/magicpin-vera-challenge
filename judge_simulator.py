@@ -267,7 +267,10 @@ class DeepSeekProvider(LLMProvider):
 class GroqProvider(LLMProvider):
     def __init__(self, api_key: str, model: str = ""):
         self.api_key = api_key
-        self.model = model or "llama-3.1-70b-versatile"
+        # llama-3.1-70b-versatile (Jan 2025) and llama-3.3-70b-versatile
+        # (Jun 2026) are both deprecated on Groq's free/dev tier; this is
+        # Groq's own recommended replacement for that model class.
+        self.model = model or "openai/gpt-oss-120b"
 
     def name(self) -> str:
         return f"Groq ({self.model})"
