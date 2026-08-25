@@ -19,24 +19,35 @@ Author: magicpin AI Challenge Team
 # =============================================================================
 # ██████  CONFIGURATION - EDIT THIS SECTION ██████
 # =============================================================================
+#
+# This file is committed to a public repo, so secrets never go here directly.
+# Every field below reads an environment variable first and only falls back
+# to the literal in this file if that variable isn't set -- so the actual
+# key lives in your shell session, never on disk / never in git.
+#
+#   export GROQ_API_KEY=gsk_...
+#   export BOT_URL=https://your-bot.onrender.com
+#   python judge_simulator.py
+
+import os as _os
 
 # Your bot's URL (where your bot is running)
-BOT_URL = "http://localhost:8080"
+BOT_URL = _os.environ.get("BOT_URL", "http://localhost:8080")
 
 # Choose your LLM provider: "openai", "anthropic", "gemini", "deepseek", "groq", "ollama", "openrouter"
-LLM_PROVIDER = "openai"
+LLM_PROVIDER = _os.environ.get("LLM_PROVIDER", "groq")
 
-# Your API key (paste your key here)
-LLM_API_KEY = ""  # <-- PUT YOUR API KEY HERE
+# Your API key -- set via environment variable, do not paste a real key here.
+LLM_API_KEY = _os.environ.get("GROQ_API_KEY") or _os.environ.get("LLM_API_KEY") or ""
 
 # Model to use (leave empty for default, or specify like "gpt-4o", "claude-3-5-sonnet-20241022", etc.)
-LLM_MODEL = ""  # <-- Optional: specify model or leave empty for default
+LLM_MODEL = _os.environ.get("LLM_MODEL", "")
 
 # For Ollama only: local server URL
-OLLAMA_URL = "http://localhost:11434"
+OLLAMA_URL = _os.environ.get("OLLAMA_URL", "http://localhost:11434")
 
 # Which test to run by default
-TEST_SCENARIO = "all"
+TEST_SCENARIO = _os.environ.get("TEST_SCENARIO", "all")
 
 # =============================================================================
 # ██████  END OF CONFIGURATION - DON'T EDIT BELOW THIS LINE ██████
